@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"github.com/jpillora/chisel/share"
+	chshare "chisel/share"
 )
 
 // handleClientHandler is the main http websocket handler for the chisel server
@@ -161,7 +161,13 @@ func (s *Server) handleSSHRequests(clientLog *chshare.Logger, reqs <-chan *ssh.R
 
 func (s *Server) handleSSHChannels(clientLog *chshare.Logger, chans <-chan ssh.NewChannel) {
 	for ch := range chans {
-		remote := string(ch.ExtraData())
+		var remote string
+		if s.reverseOk && s.remote != "" {
+			remote = s.remote
+		} else {
+			remote = string(ch.ExtraData())
+		}
+
 		socks := remote == "socks"
 		//dont accept socks when --socks5 isn't enabled
 		if socks && s.socksServer == nil {

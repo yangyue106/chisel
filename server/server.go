@@ -15,7 +15,7 @@ import (
 	"github.com/jpillora/requestlog"
 	"golang.org/x/crypto/ssh"
 
-	"github.com/jpillora/chisel/share"
+	chshare "chisel/share"
 )
 
 // Config is the configuration for the chisel service
@@ -26,6 +26,7 @@ type Config struct {
 	Proxy    string
 	Socks5   bool
 	Reverse  bool
+	Remote   string
 }
 
 // Server respresent a chisel service
@@ -41,6 +42,7 @@ type Server struct {
 	sshConfig    *ssh.ServerConfig
 	users        *chshare.UserIndex
 	reverseOk    bool
+	remote       string
 }
 
 var upgrader = websocket.Upgrader{
@@ -56,6 +58,7 @@ func NewServer(config *Config) (*Server, error) {
 		Logger:     chshare.NewLogger("server"),
 		sessions:   chshare.NewUsers(),
 		reverseOk:  config.Reverse,
+		remote:     config.Remote,
 	}
 	s.Info = true
 	s.users = chshare.NewUserIndex(s.Logger)

@@ -8,9 +8,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/jpillora/chisel/client"
-	"github.com/jpillora/chisel/server"
-	chshare "github.com/jpillora/chisel/share"
+	chclient "chisel/client"
+	chserver "chisel/server"
+	chshare "chisel/share"
 )
 
 var help = `
@@ -146,6 +146,7 @@ func server(args []string) {
 	reverse := flags.Bool("reverse", false, "")
 	pid := flags.Bool("pid", false, "")
 	verbose := flags.Bool("v", false, "")
+	remote := flags.String("remote", "", "")
 
 	flags.Usage = func() {
 		fmt.Print(serverHelp)
@@ -178,6 +179,7 @@ func server(args []string) {
 		Proxy:    *proxy,
 		Socks5:   *socks5,
 		Reverse:  *reverse,
+		Remote:   *remote,
 	})
 	if err != nil {
 		log.Fatal(err)
