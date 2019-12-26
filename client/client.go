@@ -11,9 +11,10 @@ import (
 	"strings"
 	"time"
 
+	chshare "chisel/share"
+
 	"github.com/gorilla/websocket"
 	"github.com/jpillora/backoff"
-	"github.com/jpillora/chisel/share"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -168,7 +169,13 @@ func (c *Client) connectionLoop() {
 		if connerr != nil {
 			attempt := int(b.Attempt())
 			maxAttempt := c.config.MaxRetryCount
-			d := b.Duration()
+
+			var d time.Duration
+			if attempt < 8 {
+				d = b.Duration()
+			} else {
+				d = 25 * time.Second
+			}
 			//show error and attempt counts
 			msg := fmt.Sprintf("Connection error: %s", connerr)
 			if attempt > 0 {
@@ -270,6 +277,7 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) connectStreams(chans <-chan ssh.NewChannel) {
+	c.Infof("connectStreams")
 	for ch := range chans {
 		remote := string(ch.ExtraData())
 		stream, reqs, err := ch.Accept()
