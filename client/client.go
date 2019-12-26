@@ -277,7 +277,6 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) connectStreams(chans <-chan ssh.NewChannel) {
-	c.Infof("connectStreams")
 	for ch := range chans {
 		remote := string(ch.ExtraData())
 		stream, reqs, err := ch.Accept()
